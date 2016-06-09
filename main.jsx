@@ -1,6 +1,7 @@
 import React from 'react';
 import { _ } from 'meteor/underscore';
 import { Accounts, STATES } from 'meteor/std:accounts-ui';
+import autofill from 'react-autofill';
 
 /**
  * Form.propTypes = {
@@ -187,7 +188,7 @@ class FormMessage extends Accounts.ui.FormMessage {}
 // requests altering how that works are welcome.
 
 // Alter provided default unstyled UI.
-Accounts.ui.Form = Form;
+Accounts.ui.Form = autofill(Form);
 Accounts.ui.Buttons = Buttons;
 Accounts.ui.Button = Button;
 Accounts.ui.Fields = Fields;
