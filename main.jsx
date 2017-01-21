@@ -18,16 +18,27 @@ class Form extends Accounts.ui.Form {
       fields,
       buttons,
       error,
-      message,
+      messages,
       ready = true,
       className,
       formState
     } = this.props;
+
+    let classes = ["accounts ui form", className];
+    const hasErrors = messages.length > 0;
+    if (hasErrors) {
+      classes.push("error warning");
+    }
+
+    const genericMessages = messages.filter((message) => ! message.field);
+    const message = genericMessages.map(({ message }) => message).join("\n");
+
     return (
-      <form ref={(ref) => this.form = ref} className={[ "accounts ui form", className ].join(' ')}>
+      <form ref={(ref) => this.form = ref} className={classes.join(' ')}>
         {Object.keys(fields).length > 0 ? (
           <Accounts.ui.Fields fields={ fields } />
         ): null }
+        <Accounts.ui.FormMessage className="ui message error" style={{display: 'block'}} message={message} />
         { buttons['switchToPasswordReset'] ? (
           <div className="field">
             <Accounts.ui.Button {...buttons['switchToPasswordReset']} />
@@ -60,7 +71,6 @@ class Form extends Accounts.ui.Form {
         { formState == STATES.SIGN_IN || formState == STATES.SIGN_UP ? (
             <Accounts.ui.SocialButtons oauthServices={ oauthServices } />
         ) : null }
-        <Accounts.ui.FormMessage className="ui message" style={{display: 'block'}} {...message} />
       </form>
     );
   }
@@ -116,13 +126,20 @@ class Field extends Accounts.ui.Field {
       label,
       type = 'text',
       onChange,
+      message,
       required = false,
       className,
       defaultValue = ""
     } = this.props;
     const { mount = true } = this.state;
+
+    let classes = ["ui field", required ? "required" : ""];
+    if (message) {
+      classes.push(message.type);
+    }
+
     return mount ? (
-      <div className={["ui field", required ? "required" : ""].join(' ')}>
+      <div className={classes.join(' ')}>
         <label htmlFor={ id }>{ label }</label>
         <div className="ui fluid input">
           <input id="password" name="password" style={{display: 'none'}} />
@@ -135,6 +152,10 @@ class Field extends Accounts.ui.Field {
                  onChange={ onChange }
                  placeholder={ hint } defaultValue={ defaultValue } />
         </div>
+        {message && (
+          <span className={['ui message', message.type].join(' ').trim()}>
+            {message.message}</span>
+        )}
       </div>
     ) : null;
   }
